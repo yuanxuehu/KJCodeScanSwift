@@ -211,10 +211,6 @@ open class KJScanManager: NSObject,AVCaptureMetadataOutputObjectsDelegate {
     }
     
     
-    
-    
-    
-    
     open func isGetFlash() -> Bool {
         return device != nil && device!.hasFlash && device!.hasTorch
     }

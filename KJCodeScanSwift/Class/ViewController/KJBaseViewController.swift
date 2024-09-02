@@ -12,6 +12,9 @@ open class KJBaseViewController: UIViewController {
     
     open var scanObj: KJScanManager?
     
+    open var scanStyle: KJScanViewStyle? = KJScanViewStyle()
+    open var qRScanView: KJScanView?
+    
     //连续扫码
     open var isSupportContinuous = false;
 
@@ -37,24 +40,21 @@ open class KJBaseViewController: UIViewController {
                 if let strongSelf = self {
                     strongSelf.perform(#selector(KJBaseViewController.startScan), with: nil, afterDelay: 0.3)
                 }
-              
             } else {
                 KJPermissions.jumpToSystemPrivacySetting()
             }
         }
         
+        drawScanView()
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
         NSObject.cancelPreviousPerformRequests(withTarget: self)
-        //qRScanView?.stopScanAnimation()
+        qRScanView?.stopScanAnimation()
         scanObj?.stop()
     }
     
-    
-    
-    
-    
+
     @objc open func startScan() {
         if scanObj == nil {
             let cropRect = CGRect.zero
@@ -81,10 +81,21 @@ open class KJBaseViewController: UIViewController {
                                      })
         }
         
+        // 开始扫描动画
+        qRScanView?.startScanAnimation()
+        
         // 相机运行
         scanObj?.start()
     }
     
+    open func drawScanView() {
+        if qRScanView == nil {
+            qRScanView = KJScanView(frame: view.frame, vstyle: scanStyle!)
+            view.addSubview(qRScanView!)
+        }
+    }
+    
+    //提供给子类重写
     open func handleCodeResult(arrayResult: [KJScanResult]) {
         
     }
@@ -98,9 +109,7 @@ open class KJBaseViewController: UIViewController {
             self?.present(picker, animated: true, completion: nil)
         }
     }
-    
-   
-    
+
 }
 
 //MARK: - 图片选择代理方法
